@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Filme</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #ffffff;
+            --brand-dark: #1f2235; /* O azul escuro dos botões principais */
+            --brand-pink: #ff4a85; /* O rosa vibrante para links/destaques */
+            --brand-pink-hover: #e0366f;
+            --text-main: #1f2235;
+            --text-muted: #6b7280;
+            --border: #e4e4e7;
+            --border-focus: #1f2235;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: Roboto;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        header {
+            background-image: linear-gradient(rgba(31, 34, 53, 0.85), rgba(31, 34, 53, 0.85)), 
+                              url('https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1200&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff;
+            padding: 70px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.03em;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        main {
+            max-width: 540px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+      
+
+        .header-form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .back-link {
+            font-size: 0.92rem;
+            color: var(--brand-pink);
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--brand-pink-hover);
+            text-decoration: underline;
+        }
+
+        .alert {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .field {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            font-size: 1rem;
+            color: var(--text-main);
+            background-color: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(31, 34, 53, 0.08);
+        }
+
+        /* Inputs na mesma linha */
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .row .field {
+            flex: 1;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            padding: 16px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            width: 100%;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--brand-dark);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            background-color: #161826;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 24px;
+        }
+
+        .btn-outline:hover {
+            color: var(--text-main);
+        }
+
+        @media (max-width: 480px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bem-vindo ao Catálogo de Filmes</h1>
+    <p>Aqui você pode adicionar, excluir e consultar os filmes em nosso catálogo.</p>
+</header>
+
+<main>
+
+    <div class="header-form-row">
+        <h2 th:text="${filme.id == null} ? 'Novo Filme' : 'Alterar Filme'">Novo Filme</h2>
+        <a th:href="@{/filmes}" class="back-link">Vá para a página de filmes &rarr;</a>
+    </div>
+
+    <div th:if="${erro}" class="alert" role="alert" th:text="${erro}">Erro</div>
+
+    <form th:action="@{/filmes/salvar}" th:object="${filme}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="field">
+            <label for="nome">Nome do Filme</label>
+            <input type="text" id="nome" th:field="*{nome}" placeholder="Ex: Os vingadores" required>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label for="genero">Gênero</label>
+                <input type="text" id="genero" th:field="*{genero}" placeholder="Ação" required>
+            </div>
+            <div class="field">
+                <label for="duracao">Duração (em minutos)</label>
+                <input type="number" id="duracao" th:field="*{duracao}" min="1" placeholder="120" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="classificacao">Classificação</label>
+            <input type="text" id="classificacao" th:field="*{classificacao}" placeholder="Ex: 14 anos" required>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-primary">Adicionar Filme</button>
+            <a th:href="@{/filmes}" class="btn btn-outline">Cancelar esse cadastro</a>
+        </div>
+    </form>
+
+</main>
+
+</body>
+</html>
